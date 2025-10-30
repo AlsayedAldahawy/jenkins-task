@@ -13,6 +13,7 @@ pipeline {
     }
 
     stages {
+
         stage('Clone from GitHub') {
             steps {
                 git branch: 'main', url: 'https://github.com/AlsayedAldahawy/jenkins-task.git'
@@ -22,7 +23,8 @@ pipeline {
         stage('Build') {
             steps {
                 echo "Installing Python dependencies..."
-                sh 'pip install -r requirements.txt'
+                bat 'python -m pip install --upgrade pip'
+                bat 'pip install -r requirements.txt'
             }
         }
 
@@ -32,14 +34,14 @@ pipeline {
             }
             steps {
                 echo "Building Docker image..."
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                bat "docker build -t %DOCKER_IMAGE% ."
             }
         }
 
         stage('Deploy') {
             steps {
                 echo "Deploying application..."
-                sh "nohup python app.py &"
+                bat 'start python app.py'
             }
         }
     }
