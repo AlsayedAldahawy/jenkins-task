@@ -13,16 +13,7 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                echo 'Installing dependencies...'
-                script {
-                    bat 'python --version || echo "Python not found - skipping direct run"'
-                }
-            }
-        }
-
-        stage('Optional: Docker Container') {
+        stage('Build Docker Image') {
             when {
                 expression { fileExists('Dockerfile') }
             }
@@ -34,7 +25,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo 'Deploying the Python app...'
+                echo 'Running Python app inside Docker...'
                 script {
                     try {
                         if (fileExists('Dockerfile')) {
@@ -42,9 +33,9 @@ pipeline {
                         } else {
                             bat 'python app.py'
                         }
-                        echo 'Deployment successful!'
+                        echo '✅ Deployment successful!'
                     } catch (err) {
-                        echo "Deployment failed: ${err}"
+                        echo "❌ Deployment failed: ${err}"
                         error("Deployment failed!")
                     }
                 }
